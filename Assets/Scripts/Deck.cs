@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +7,32 @@ public class Deck : MonoBehaviour
     // including shuffling, drawing, and (POSSIBLY)discarding cards.
 
     private List<Card> cards, discardPile;
+
+
+
+    public void GenerateStandardDeck()
+    {
+        for (int suit = 0; suit < 4; suit++)
+        {
+            for (int rank = 2; rank <= 14; rank++)
+            {
+                Card card = new Card
+                {
+                    cardName = $"{(Suit)suit} {(Rank)rank}"
+                };
+                cards.Add(card);
+            }
+        }
+    }
     public void RetrieveWildCards()
     {
         // this method will be responsible for retrieving all the wild cards from the resources folder,
         // and adding them to the deck's list of cards.
         WildCard[] wildCards = Resources.LoadAll<WildCard>("WildCards");
+
         foreach (WildCard wildCard in wildCards)
         {
-            cards.Add(wildCard);
+            cards.Add(new WildCardInstance(wildCard));
         }
     }
 
@@ -44,6 +61,10 @@ public class Deck : MonoBehaviour
     {
         cards = new List<Card>();
         discardPile = new List<Card>();
+
+
+        // generates the standard 52 card deck, with 4 suits and 13 ranks each
+        GenerateStandardDeck();
 
         // Puts all cards from resource folder into the deck
         // ready to be shuffled

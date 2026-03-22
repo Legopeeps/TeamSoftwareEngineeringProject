@@ -1,44 +1,15 @@
-using System.Net.Security;
 using UnityEngine;
 
-public class Card : MonoBehaviour
+///for deck generation
+public enum Suit { Hearts, Diamonds, Clubs, Spades }
+//named ranks, word values assigned explicit declaration within enum
+public enum Rank { Ace = 1, Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack = 11, Queen = 12, King = 13 }
+
+public class Card
 {
-    //playing cards (non wild)
-    public enum Suit
+    public string cardName;
+    public virtual void Play()
     {
-        Hearts,
-        Diamonds,
-        Clubs,
-        Spades
-    }
-
-    public enum Rank
-    {
-        Two = 2,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        Ten,
-        Jack,
-        Queen,
-        King,
-        Ace
-    }
-
-    void Start()
-    {
-        //standard 52 card deck generation
-        for (int suit = 0; suit < 4; suit++)
-        {
-            for (int rank = 2; rank <= 14; rank++)
-            {
-                Debug.Log($"Card: {(Suit)suit} {((Rank)rank).ToString()}");
-            }
-        }
 
     }
 }

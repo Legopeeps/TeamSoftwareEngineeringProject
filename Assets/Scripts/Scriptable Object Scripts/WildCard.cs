@@ -14,4 +14,9 @@ public class WildCard : ScriptableObject
     // so that they can be easily identified as wild cards in the game logic,
     // seperate from regular playing cards, as we will be making lots of wilds
     private bool isWildCard = true;
+
+    public void PlayEffect()
+    {
+        Debug.Log("Playing effect of " + cardName);
+    }
 }
