@@ -6,7 +6,7 @@ public class Deck : MonoBehaviour
     // this class will be responsible for managing the deck of cards in the game,
     // including shuffling, drawing, and (POSSIBLY)discarding cards.
 
-    private List<Card> cards, discardPile;
+    public List<Card> cards, discardPile;
 
 
 
