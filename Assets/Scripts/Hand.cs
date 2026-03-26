@@ -41,7 +41,7 @@ public class Hand : MonoBehaviour
         {
             win = true;
 
-            SceneManager.LoadScene("Sc_Game Over");
+            //SceneManager.LoadScene("Sc_Game Over");
         }
     }
 
@@ -58,6 +58,20 @@ public class Hand : MonoBehaviour
         }
 
 
+
+
+    }
+
+    public void update()
+    {
+        if (deck.finished == true)      //checks if the deck has finished being created and shuffled
+        {
+            deck = link.GetComponent<Deck>();
+
+
+            get_starting_hand();
+            deck.finished = false;
+        }
 
         while (turn == true)
         {
