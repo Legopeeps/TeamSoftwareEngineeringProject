@@ -7,6 +7,7 @@ public class Deck : MonoBehaviour
     // including shuffling, drawing, and (POSSIBLY)discarding cards.
 
     public List<Card> cards, discardPile;
+    public bool finished = false;
 
 
 
@@ -72,5 +73,8 @@ public class Deck : MonoBehaviour
 
         //shuffles Fisher-Yates style 
         ShuffleDeck();
+
+        finished = true;  //ensures the deck is fully initialised
+
     }
 }
