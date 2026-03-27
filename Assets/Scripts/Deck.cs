@@ -74,7 +74,8 @@ public class Deck : MonoBehaviour
         //shuffles Fisher-Yates style 
         ShuffleDeck();
 
-        finished = true;  //ensures the deck is fully initialised
+        //ensures the deck is fully initialised
+        finished = true;  
 
     }
 }

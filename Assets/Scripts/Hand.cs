@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Hand : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class Hand : MonoBehaviour
     
     //class for everything involving the hand
     //used for drawing cards at the start of the game, placing cards. 
-    private List<Card> hand_cards;
+    public List<Card> hand_cards;
     public int starting_size = 5;
     public GameObject link;
     public Deck deck;
@@ -23,7 +24,6 @@ public class Hand : MonoBehaviour
         {
             draw_card();
         } 
-
     }
 
     //draws a card from the deck
@@ -31,7 +31,6 @@ public class Hand : MonoBehaviour
     {
         hand_cards.Add(deck.cards[0]);
         deck.cards.RemoveAt(0);    //removes the card fron the deck
-        
     }
 
     //checks if you have won
@@ -41,7 +40,7 @@ public class Hand : MonoBehaviour
         {
             win = true;
 
-            //SceneManager.LoadScene("Sc_Game Over");
+            SceneManager.LoadScene("Sc_GameOver");
         }
     }
 
@@ -52,13 +51,8 @@ public class Hand : MonoBehaviour
         if (deck.finished == true)      //checks if the deck has finished being created and shuffled
         {
             deck = link.GetComponent<Deck>();
-
-
             get_starting_hand();
         }
-
-
-
 
     }
 
@@ -67,8 +61,6 @@ public class Hand : MonoBehaviour
         if (deck.finished == true)      //checks if the deck has finished being created and shuffled
         {
             deck = link.GetComponent<Deck>();
-
-
             get_starting_hand();
             deck.finished = false;
         }
