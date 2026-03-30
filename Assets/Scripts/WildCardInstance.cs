@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public class WildCardInstance : Card
+/* public class WildCardInstance : Card_SO
 {
     private WildCard data;
 
@@ -14,4 +12,4 @@ public class WildCardInstance : Card
     {
         data.PlayEffect();
     }
-}
+} */
