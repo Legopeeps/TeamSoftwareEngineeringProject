@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cb2d483e5a7d9245b11bcb6e0d57535, type: 3}
-  m_Name: WildCardTest
+  m_Name: 4 of Clubs
   m_EditorClassIdentifier: 
-  cardName: WildCardTest
-  value: 0
-  description: this is a test
+  cardName: 4 of Clubs
+  rank: 4
+  artwork: {fileID: 0}
+  isWildCard: 0
+  description: 

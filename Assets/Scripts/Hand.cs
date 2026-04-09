@@ -4,8 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class Hand : MonoBehaviour
 {
-
-
     //class for everything involving the hand
     //used for drawing cards at the start of the game, placing cards. 
     public List<Card_SO> hand_cards;
@@ -18,23 +16,23 @@ public class Hand : MonoBehaviour
 
     //gets the starting hand for the player
 
-    public void get_starting_hand()
+    public void GetStartingHand()
     {
         for (int i = 0; i < starting_size; i++)
         {
-            draw_card();
+            DrawCard();
         }
     }
 
     //draws a card from the deck
-    public void draw_card()
+    public void DrawCard()
     {
         hand_cards.Add(deck.cards[0]);
         deck.cards.RemoveAt(0);    //removes the card fron the deck
     }
 
     //checks if you have won
-    public void win_check()
+    public void WinCheck()
     {
         if (hand_cards.Count == 0)
         {
@@ -51,23 +49,23 @@ public class Hand : MonoBehaviour
         if (deck.finished == true)      //checks if the deck has finished being created and shuffled
         {
             deck = link.GetComponent<Deck>();
-            get_starting_hand();
+            GetStartingHand();
         }
 
     }
 
-    public void update()
+    public void Update()
     {
         if (deck.finished == true)      //checks if the deck has finished being created and shuffled
         {
             deck = link.GetComponent<Deck>();
-            get_starting_hand();
+            GetStartingHand();
             deck.finished = false;
         }
 
         while (turn == true)
         {
-            win_check();    //checks if won
+            WinCheck();    //checks if won
         }
     }
 

@@ -5,7 +5,6 @@ public class Deck : MonoBehaviour
 {
     // this class will be responsible for managing the deck of cards in the game,
     // including shuffling, drawing, and (POSSIBLY)discarding cards.
-
     public List<Card_SO> cards, discardPile;
     public bool finished = false;
 
@@ -25,16 +24,13 @@ public class Deck : MonoBehaviour
             Card_SO temp = cards[i];
             cards[i] = cards[j];
             cards[j] = temp;
-
         }
         Debug.Log("Deck shuffled successfully");
     }
 
     public void LoadAllCards()
     {
-        // this method will be responsible for loading all the cards from the resources folder into the deck,
-        // folders for standard cards and wild cards, so that we can easily add new cards to the game by 
-        // simply adding new assets to the resources folder
+        //From resources folder, takes playing cards & wildcards
         Card_SO[] standardCards = Resources.LoadAll<Card_SO>("PlayingCards");
         Card_SO[] wildCards = Resources.LoadAll<Card_SO>("WildCards");
 
