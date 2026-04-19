@@ -4,7 +4,8 @@ using UnityEngine;
 public class Card_SO : ScriptableObject
 {
     public string cardName;
-    public enum suit { Hearts, Diamonds, Clubs, Spades };
+    public Suit suit;
+    public int score;
     public Rank rank;
     public Sprite artwork;
 

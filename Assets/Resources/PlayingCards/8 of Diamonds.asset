@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 8 of Diamonds
   m_EditorClassIdentifier: 
   cardName: 8 of Diamonds
+  suit: 3
+  score: 0
   rank: 8
   artwork: {fileID: 0}
   isWildCard: 1

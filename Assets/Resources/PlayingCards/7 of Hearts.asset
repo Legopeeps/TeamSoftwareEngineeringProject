@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 7 of Hearts
   m_EditorClassIdentifier: 
   cardName: 7 of Hearts
+  suit: 1
+  score: 0
   rank: 7
   artwork: {fileID: 0}
   isWildCard: 0
