@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Jack of Hearts
   m_EditorClassIdentifier: 
   cardName: Jack of Hearts
+  suit: 1
+  score: 0
   rank: 11
   artwork: {fileID: 0}
   isWildCard: 0

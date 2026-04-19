@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 4 of Spades
   m_EditorClassIdentifier: 
   cardName: 4 of Spades
+  suit: 2
+  score: 0
   rank: 4
   artwork: {fileID: 0}
   isWildCard: 0

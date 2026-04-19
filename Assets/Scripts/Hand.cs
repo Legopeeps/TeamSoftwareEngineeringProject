@@ -6,13 +6,13 @@ public class Hand : MonoBehaviour
 {
     //class for everything involving the hand
     //used for drawing cards at the start of the game, placing cards. 
-    public List<Card_SO> hand_cards;
+    public List<Card> hand_cards;
     public int starting_size = 5;
     public GameObject link;
     public Deck deck;
     public bool turn = false;
     public bool win = true;
-    public Card_SO selected_card;
+    public Card selected_card;
 
     //gets the starting hand for the player
 
@@ -42,32 +42,32 @@ public class Hand : MonoBehaviour
         }
     }
 
-    public void Awake()
-    {
-        hand_cards = new List<Card_SO>();  //initialises the hand
+    //public void Awake()
+    //{
+    //    hand_cards = new List<Card>();  //initialises the hand
+    //
+    //    if (deck.finished == true)      //checks if the deck has finished being created and shuffled
+    //    {
+    //        deck = link.GetComponent<Deck>();
+    //        GetStartingHand();
+    //    }
+    //
+    //}
 
-        if (deck.finished == true)      //checks if the deck has finished being created and shuffled
-        {
-            deck = link.GetComponent<Deck>();
-            GetStartingHand();
-        }
-
-    }
-
-    public void Update()
-    {
-        if (deck.finished == true)      //checks if the deck has finished being created and shuffled
-        {
-            deck = link.GetComponent<Deck>();
-            GetStartingHand();
-            deck.finished = false;
-        }
-
-        while (turn == true)
-        {
-            WinCheck();    //checks if won
-        }
-    }
+    //public void Update()
+    //{
+    //    if (deck.finished == true)      //checks if the deck has finished being created and shuffled
+    //    {
+    //        deck = link.GetComponent<Deck>();
+    //        GetStartingHand();
+    //        deck.finished = false;
+    //    }
+    //
+    //    while (turn == true)
+    //    {
+    //        WinCheck();    //checks if won
+    //    }
+    //}
 
 
 }

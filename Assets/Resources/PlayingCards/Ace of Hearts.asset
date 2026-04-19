@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Ace of Hearts
   m_EditorClassIdentifier: 
   cardName: Ace of Hearts
+  suit: 1
+  score: 0
   rank: 1
   artwork: {fileID: 0}
   isWildCard: 0
