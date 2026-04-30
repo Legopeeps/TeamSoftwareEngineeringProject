@@ -54,4 +54,20 @@ public class Card : MonoBehaviour
             _ => throw new System.ArgumentOutOfRangeException(nameof(suit), suit, null)
         };
     }
+
+    public void OnCardClicked()
+    {
+        GameManager gm = FindFirstObjectByType<GameManager>();
+        if (gm == null) return;
+
+        foreach (Hand hand in gm.players)
+        {
+            if (hand.hand_cards.Contains(this))
+            {
+                gm.TryPlayCard(this, hand);
+                return;
+            }
+        }
+    }
+
 }
