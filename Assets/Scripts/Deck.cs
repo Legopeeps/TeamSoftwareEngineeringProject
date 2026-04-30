@@ -11,6 +11,7 @@ public class Deck : MonoBehaviour
     public bool finished = false;
     public GameObject cardPrefab;
     public List<Card> cards;
+    public Transform deckHolderTransform;
 
     public void ShuffleDeck()
     {
@@ -40,7 +41,8 @@ public class Deck : MonoBehaviour
 
         foreach (Card_SO cardSO in standardCards)
         {
-            GameObject cardObject = Instantiate(cardPrefab);
+            GameObject cardObject = Instantiate(cardPrefab, deckHolderTransform);
+            cardObject.SetActive(false);
             Card card = cardObject.GetComponent<Card>();
             card.DisplayCard(cardSO);
             cards.Add(card);
