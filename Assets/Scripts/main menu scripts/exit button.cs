@@ -8,7 +8,6 @@ public class exitbutton : MonoBehaviour
     public Sprite normal_exit;
     public Sprite pressed_exit;
 
-
     void Start()
     {
         exit_button = GetComponent<Image>();
