@@ -1,39 +1,40 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 
 // this class will be responsible for managing the deck of cards in the game,
-// including shuffling, drawing, and (POSSIBLY)discarding cards.
+// including shuffling, drawing, and (POSSIBLY) discarding cards.
 public class Deck : MonoBehaviour
 {
-
-    public List<Card_SO> cardsSO;
+    //public List<Card> cards;
+    //public List<Card_SO> cardsSO;
     public bool finished = false;
     public GameObject cardPrefab;
-    public List<Card> cards;
+    
     public Transform deckHolderTransform;
+    public List<Card> cards;
 
-    public void ShuffleDeck()
+    private void ShuffleDeck()
     {
         // this method will be responsible for shuffling the deck of cards,
         // want to use fisher-yates shuffle algorithm to ensure a good shuffle,
         // it's a cool one i found on stack overflow
-        if (cardsSO.Count == 0)
+        if (cards.Count == 0)
         {
             Debug.LogWarning("Deck is empty, cannot shuffle.");
             return;
         }
-        for (int i = cardsSO.Count - 1; i > 0; i--)
+        for (int i = cards.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
-            Card_SO temp = cardsSO[i];
-            cardsSO[i] = cardsSO[j];
-            cardsSO[j] = temp;
+            Card temp = cards[i];
+            cards[i] = cards[j];
+            cards[j] = temp;
         }
         Debug.Log("Deck shuffled successfully");
     }
 
-    public void LoadAllCards()
+    private void LoadAllCards()
     {
         //From resources folder, takes playing cards & wildcards
         Card_SO[] standardCards = Resources.LoadAll<Card_SO>("PlayingCards");
@@ -45,7 +46,7 @@ public class Deck : MonoBehaviour
             cardObject.SetActive(false);
             Card card = cardObject.GetComponent<Card>();
             card.DisplayCard(cardSO);
-            cards.Add(card);
+            cards.Add(card); //loaded into list
         }
         Debug.Log($"Loaded {standardCards.Length} standard cards into the deck.");
 
@@ -53,15 +54,14 @@ public class Deck : MonoBehaviour
         //    cards.Add(Instantiate(wildCard));
     }
 
-    public void Awake()
+    public void InitialiseDeck()
     {
-        cardsSO = new List<Card_SO>();
         cards = new List<Card>();
         LoadAllCards();
 
         // shuffles Fisher-Yates style 
         ShuffleDeck();
-
+        
         // ensures the deck is fully initialised
         finished = true;
     }

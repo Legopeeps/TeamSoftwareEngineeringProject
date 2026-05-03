@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class Hand : MonoBehaviour
 {
@@ -27,8 +28,8 @@ public class Hand : MonoBehaviour
     //draws a card from the deck
     public void DrawCard()
     {
-        Card drawnCard = deck.cards[0];
-        deck.cards.RemoveAt(0);
+        Card drawnCard = deck.cards.First();
+        deck.cards.Remove(drawnCard);
         drawnCard.gameObject.SetActive(true);
         drawnCard.transform.SetParent(cardLayout, false);
         drawnCard.transform.localScale = Vector3.one;
@@ -43,18 +44,20 @@ public class Hand : MonoBehaviour
             DeselectCard();
 
         selected_card = card;
-
+        card.selected = true;
         // Nudge the card upward visually to show it is selected
         card.transform.localPosition = new Vector3(
             card.transform.localPosition.x,
             card.transform.localPosition.y + 20f,
             card.transform.localPosition.z
         );
+        Debug.Log($"Selected card: {card.card_SO.rank} of {card.card_SO.suit}");
     }
+
     public void DeselectCard()
     {
         if (selected_card == null) return;
-
+        selected_card.selected = false;
         selected_card.transform.localPosition = new Vector3(
             selected_card.transform.localPosition.x,
             selected_card.transform.localPosition.y - 20f,
