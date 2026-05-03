@@ -8,12 +8,17 @@ public class Hand : MonoBehaviour
     //class for everything involving the hand
     //used for drawing cards at the start of the game, placing cards. 
     public List<Card> hand_cards;
+
     public int starting_size = 5;
     public Deck deck;
-    public bool turn = false;
     public Card selected_card;
     public Transform cardLayout; 
 
+
+    public void SetupHand()
+    {
+        hand_cards = new List<Card>();
+    }
 
     //gets the starting hand for the player
 
@@ -77,21 +82,4 @@ public class Hand : MonoBehaviour
         return false;
 
     }
-    //checks if you have won
-    public void WinCheck()
-    {
-        if (hand_cards.Count == 0)
-        {
-            SceneManager.LoadScene("Sc_GameOver");
-        }
-    }
-
-    public void Awake()
-    {
-        hand_cards = new List<Card>();  //initialises the hand
-
-        
-    
-    }
-
 }

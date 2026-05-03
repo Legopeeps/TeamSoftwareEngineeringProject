@@ -4,18 +4,19 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
-public enum GameState { Start, PlayerTurn, End}
+public enum GameState { StartGame, BeginPlayerTurn, EndPlayerTurn, EndGame}
 
 public class GameManager : MonoBehaviour
 {
     private GameState currentState;
     public Deck deck;
     public List<Hand> playerHands;
-    public int initialHandSize = 5;
-    public Card topCard;
+    public int initialHandSize = 1;
+    public int currentPlayerIndex = 0;
+    public Card_SO topCard;
     public Transform playPilePosition;
-    public TMP_Text turnAnnouncerText; //ui elements
-    public TMP_Text topCardText;
+    public GameObject playerSwitchPanel;
+    public TMP_Text playerSwitchText;
 
     private void OnEnable()
     {
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        currentState = GameState.Start;
+        currentState = GameState.StartGame;
         SetupGame();
     }
 
@@ -49,20 +50,23 @@ public class GameManager : MonoBehaviour
 
     void PlaceOnPile(Card card)
     {
-        topCard = card;    
-        card.gameObject.SetActive(true);      
+        topCard = card.card_SO;
+        card.gameObject.SetActive(true);
         card.transform.SetParent(playPilePosition);  //moves the card to the play position
         card.transform.localPosition = Vector3.zero; //centres the card
-        //card.transform.localscale = Vector3.one;
+        card.transform.localScale = Vector3.one;
 
-        if (topCardText != null)
-            topCardText.text = $"Top: {card.card_SO.rank} of {card.card_SO.suit}"; //updates ui for the top card
+        Debug.Log($"Top: {card.card_SO.rank} of {card.card_SO.suit}"); //updates ui for the top card
     }
 
     void SetupGame()
     {
         Debug.Log("Setting up the game...");
         deck.InitialiseDeck();
+        foreach (Hand hand in playerHands)
+        {
+            hand.SetupHand();
+        }
         // assign each hand to the respective player variable
         for (int i = 0; i < initialHandSize; i++)
         {
@@ -71,35 +75,10 @@ public class GameManager : MonoBehaviour
         }
 
         FlipStartingCard();
-
-        GameLoop();
-
-        // turn
+        EnableHand(playerHands[currentPlayerIndex]);
+        StartCoroutine(PlayerTurn(playerHands[currentPlayerIndex]));
     }
 
-    void GameLoop()
-    {
-        //while (currentState != GameState.End)
-        //{
-        //   //foreach(Hand hand in playerHands)
-        //   //{
-        //   //    //make it known that it's "this" players turn
-        //   //    yield return new WaitForSeconds(2f);
-        //   //    currentState = GameState.PlayerTurn;
-        //   //    EnableHand(hand);
-        //   //    //turn goes here
-        //   //
-        //   //    if(hand.hand_cards.Count == 0)
-        //   //    {
-        //   //        currentState = GameState.End;
-        //   //        Debug.Log($"Player [player name here] has won!");
-        //   //        break;
-        //   //    }
-        //   //    DisableHand(hand);
-        //   //}
-        //}
-        //yield return null;
-    }
 
     void EnableHand(Hand hand)
     {
@@ -110,34 +89,85 @@ public class GameManager : MonoBehaviour
         hand.gameObject.SetActive(false);
     }
 
-    IEnumerator PlayerTurn(Hand hand) { 
-        // logic for player's turn
+    IEnumerator EndGame(Hand hand)
+    {
+        Debug.Log($"Player {hand.gameObject.name} has won!");
+
+        //game over screen?? do it the same as player switch
         
-        yield return null; // placeholder for turn duration
+        yield return null;
     }
+
+    IEnumerator PlayerTurn(Hand hand) {
+        currentState = GameState.BeginPlayerTurn;
+        //make it known that it's "this" players turn
+        Debug.Log($"--- {hand.gameObject.name}'s Turn ---");
+        yield return new WaitForSeconds(2f);
+
+
+
+        yield return new WaitUntil (() => currentState == GameState.EndPlayerTurn); //waits until the player has ended their turn
+        Debug.Log("Player has ended their turn.");
+        WinCheck(hand);
+        if (currentState == GameState.EndGame)
+        {
+            StartCoroutine(EndGame(hand));
+        }
+        else
+        {
+            DisableHand(hand);
+            StartCoroutine(NextTurn());
+        }
+    }
+
+    IEnumerator NextTurn()
+    {
+        playerSwitchText.text = $"{playerHands[(currentPlayerIndex + 1) % playerHands.Count].gameObject.name}'s Turn";
+        playerSwitchPanel.SetActive(true);
+        DisableHand(playerHands[currentPlayerIndex]);
+        currentPlayerIndex = (currentPlayerIndex + 1) % playerHands.Count;
+        yield return new WaitForSeconds(2f);
+        EnableHand(playerHands[currentPlayerIndex]);
+        playerSwitchPanel.SetActive(false);
+        yield return StartCoroutine(PlayerTurn(playerHands[currentPlayerIndex]));
+    }
+
 
     bool IsPlayable(Card card)
     {
-       return card.card_SO.suit == topCard.card_SO.suit || card.card_SO.rank == topCard.card_SO.rank;  //returns true if the card is playable
+       return card.card_SO.suit == topCard.suit || card.card_SO.rank == topCard.rank || card.card_SO.isWildCard;  //returns true if the card is playable
     }
 
     public void TryPlayCard(Card card, Hand hand)
     {
-        Debug.Log($"TryPlayCard has been called");
-        if (!hand.turn) return;    //ignores the other players
-    
+        Debug.Log("TryPlayCard CHECK");
         if (IsPlayable(card))
         {
             Debug.Log($"Played {card.card_SO.rank} of {card.card_SO.suit}.");
             hand.hand_cards.Remove(card);   //removes a card from the hand and places it on the pile
             PlaceOnPile(card);
-            hand.WinCheck();  //trys wincheck
-            //EndTurn();
+            currentState = GameState.EndPlayerTurn;
         }
         else
         {
             Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} — must match rank or suit.");
         }
+        //EndTurn();
+    }
+
+    //checks if you have won
+    public void WinCheck(Hand hand)
+    {
+        if (hand.hand_cards.Count == 0)
+        {
+            currentState = GameState.EndGame;
+        }
+    }
+
+    public void DrawCard()
+    {
+        playerHands[currentPlayerIndex].DrawCard();
+        currentState = GameState.EndPlayerTurn;
     }
 
 }
@@ -245,5 +275,5 @@ public class GameManager : MonoBehaviour
 //
 //void EndTurn()
 //{
-//    StartTurn((currentPlayerIndex + 1) % players.Count);  //goes to the next player
+//    StartTurn(  //goes to the next player
 //}
