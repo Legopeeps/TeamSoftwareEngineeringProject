@@ -3,8 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
-public enum GameState { StartGame, BeginPlayerTurn, EndPlayerTurn, EndGame}
+public enum GameState { StartGame, BeginPlayerTurn, EndPlayerTurn, EndGame }
 
 public class GameManager : MonoBehaviour
 {
@@ -15,22 +16,9 @@ public class GameManager : MonoBehaviour
     public int currentPlayerIndex = 0;
     public Card_SO topCard;
     public Transform playPilePosition;
-    public GameObject playerSwitchPanel;
-    public TMP_Text playerSwitchText;
+    public GameObject playerSwitchPanel, gameOverPanel;
+    public TMP_Text playerSwitchText, gameOverText;
 
-    private void OnEnable()
-    {
-        Time.timeScale = 1f;
-    }
-
-    private void OnDisable()
-    {
-        StopAllCoroutines();
-    }
-    private void OnDestroy()
-    {
-        StopAllCoroutines();
-    }
 
     void Start()
     {
@@ -41,8 +29,8 @@ public class GameManager : MonoBehaviour
 
     void FlipStartingCard()
     {
-        if (deck.cards.Count == 0) return;  
-    
+        if (deck.cards.Count == 0) return;
+
         Card firstCard = deck.cards[0];  //sets the first card in a variable
         deck.cards.RemoveAt(0);
         PlaceOnPile(firstCard);  //places it on the pile
@@ -54,9 +42,7 @@ public class GameManager : MonoBehaviour
         card.gameObject.SetActive(true);
         card.transform.SetParent(playPilePosition);  //moves the card to the play position
         card.transform.localPosition = Vector3.zero; //centres the card
-        card.transform.localScale = Vector3.one;
-
-        Debug.Log($"Top: {card.card_SO.rank} of {card.card_SO.suit}"); //updates ui for the top card
+        card.transform.localScale = Vector3.one; //resets the scale of the card to fit
     }
 
     void SetupGame()
@@ -79,35 +65,12 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PlayerTurn(playerHands[currentPlayerIndex]));
     }
 
-
-    void EnableHand(Hand hand)
+    IEnumerator PlayerTurn(Hand hand)
     {
-        hand.gameObject.SetActive(true);
-    }
-    void DisableHand(Hand hand) 
-    {
-        hand.gameObject.SetActive(false);
-    }
-
-    IEnumerator EndGame(Hand hand)
-    {
-        Debug.Log($"Player {hand.gameObject.name} has won!");
-
-        //game over screen?? do it the same as player switch
-        
-        yield return null;
-    }
-
-    IEnumerator PlayerTurn(Hand hand) {
         currentState = GameState.BeginPlayerTurn;
         //make it known that it's "this" players turn
-        Debug.Log($"--- {hand.gameObject.name}'s Turn ---");
         yield return new WaitForSeconds(2f);
-
-
-
-        yield return new WaitUntil (() => currentState == GameState.EndPlayerTurn); //waits until the player has ended their turn
-        Debug.Log("Player has ended their turn.");
+        yield return new WaitUntil(() => currentState == GameState.EndPlayerTurn); //waits until the player has ended their turn
         WinCheck(hand);
         if (currentState == GameState.EndGame)
         {
@@ -122,20 +85,29 @@ public class GameManager : MonoBehaviour
 
     IEnumerator NextTurn()
     {
+        //buffer to show what's happened in the game view
+        yield return new WaitForSeconds(0.5f);
         playerSwitchText.text = $"{playerHands[(currentPlayerIndex + 1) % playerHands.Count].gameObject.name}'s Turn";
-        playerSwitchPanel.SetActive(true);
-        DisableHand(playerHands[currentPlayerIndex]);
-        currentPlayerIndex = (currentPlayerIndex + 1) % playerHands.Count;
+        playerSwitchPanel.SetActive(true); //next player panel revealed
+        DisableHand(playerHands[currentPlayerIndex]); //previous players hand disabled
+        currentPlayerIndex = (currentPlayerIndex + 1) % playerHands.Count; //update the current player to the next
         yield return new WaitForSeconds(2f);
         EnableHand(playerHands[currentPlayerIndex]);
         playerSwitchPanel.SetActive(false);
-        yield return StartCoroutine(PlayerTurn(playerHands[currentPlayerIndex]));
+        yield return StartCoroutine(PlayerTurn(playerHands[currentPlayerIndex])); //on reveal, new player's turn is ready with their hand enabled
+    }
+
+    public void DrawCard()
+    {
+        playerHands[currentPlayerIndex].DrawCard();
+
+        currentState = GameState.EndPlayerTurn;
     }
 
 
     bool IsPlayable(Card card)
     {
-       return card.card_SO.suit == topCard.suit || card.card_SO.rank == topCard.rank || card.card_SO.isWildCard;  //returns true if the card is playable
+        return card.card_SO.suit == topCard.suit || card.card_SO.rank == topCard.rank || card.card_SO.isWildCard;  //returns true if the card is playable
     }
 
     public void TryPlayCard(Card card, Hand hand)
@@ -150,12 +122,19 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} — must match rank or suit.");
+            Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} ï¿½ must match rank or suit.");
         }
-        //EndTurn();
     }
 
-    //checks if you have won
+    IEnumerator EndGame(Hand hand)
+    {
+        gameOverPanel.SetActive(true);
+        
+        gameOverText.text = "Player " + hand.gameObject.name + " has Won!";
+
+        yield return null;
+    }
+
     public void WinCheck(Hand hand)
     {
         if (hand.hand_cards.Count == 0)
@@ -164,11 +143,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void DrawCard()
+    /*
+     * Hand Enabling and Disabling
+     */
+
+    void EnableHand(Hand hand)
     {
-        playerHands[currentPlayerIndex].DrawCard();
-        currentState = GameState.EndPlayerTurn;
+        hand.gameObject.SetActive(true);
     }
+    void DisableHand(Hand hand)
+    {
+        hand.gameObject.SetActive(false);
+    }
+
+
+    /*
+     * Coroutine management
+     */
+    private void OnEnable()
+    {
+        Time.timeScale = 1f;
+    }
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
+
 
 }
 
@@ -246,7 +250,7 @@ public class GameManager : MonoBehaviour
 //    }
 //    else
 //    {
-//        Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} — must match rank or suit.");
+//        Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} ï¿½ must match rank or suit.");
 //    }
 //}
 
@@ -262,7 +266,7 @@ public class GameManager : MonoBehaviour
 //    }
 //    else
 //    {
-//        Debug.LogWarning("Deck is empty — no card to draw.");
+//        Debug.LogWarning("Deck is empty ï¿½ no card to draw.");
 //    }
 //
 //    EndTurn();
