@@ -12,6 +12,7 @@ public class Card : MonoBehaviour
     public Image suitImage; // Final location of Sprite on card
     public Sprite clubsSPR, heartsSPR, spadesSPR, diamondsSPR; // Potential sprites
     public TextMeshProUGUI cardRankText, cardScoreText; // Text locations
+    public bool selected = false;
 
     public void DisplayCard(Card_SO card_SOToDisplay)
     {
@@ -60,11 +61,20 @@ public class Card : MonoBehaviour
         GameManager gm = FindFirstObjectByType<GameManager>();
         if (gm == null) return;
 
-        foreach (Hand hand in gm.players)
+        foreach (Hand hand in gm.playerHands)
         {
             if (hand.hand_cards.Contains(this))
             {
-                gm.TryPlayCard(this, hand);
+
+                if(selected == true)
+                {
+                    gm.TryPlayCard(this, hand);
+                }
+                else
+                {
+                    hand.SelectCard(this);
+                }
+
                 return;
             }
         }
