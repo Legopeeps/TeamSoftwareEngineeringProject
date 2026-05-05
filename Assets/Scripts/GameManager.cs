@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour
 
     void SetupGame()
     {
-        Debug.Log("Setting up the game...");
         deck.InitialiseDeck();
         foreach (Hand hand in playerHands)
         {
@@ -119,7 +118,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 //collects data of all the cards currently held by players to reshuffle into the deck
-                List<Card> allHeldCards = playerHands.SelectMany(h => h.hand_cards).ToList();
+                List<Card> allHeldCards = playerHands.SelectMany(h => h.heldCards).ToList();
 
                 Card currentTopCard = playPilePosition.GetComponentInChildren<Card>();
                 if (currentTopCard != null)
@@ -148,7 +147,7 @@ public class GameManager : MonoBehaviour
         if (IsPlayable(card))
         {
             Debug.Log($"Played {card.card_SO.rank} of {card.card_SO.suit}.");
-            hand.hand_cards.Remove(card);   //removes a card from the hand and places it on the pile
+            hand.heldCards.Remove(card);   //removes a card from the hand and places it on the pile
             PlaceOnPile(card);
             currentState = GameState.EndPlayerTurn;
         }
@@ -173,7 +172,7 @@ public class GameManager : MonoBehaviour
 
     public void WinCheck(Hand hand)
     {
-        if (hand.hand_cards.Count == 0)
+        if (hand.heldCards.Count == 0)
         {
             currentState = GameState.EndGame;
         }

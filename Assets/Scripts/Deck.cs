@@ -6,11 +6,8 @@ using System.Linq;
 // including shuffling, drawing, and (POSSIBLY) discarding cards.
 public class Deck : MonoBehaviour
 {
-    //public List<Card> cards;
-    //public List<Card_SO> cardsSO;
-    public bool finished = false;
+    public bool isDeckLoaded = false;
     public GameObject cardPrefab;
-    
     public Transform deckHolderTransform;
     public List<Card> cards;
 
@@ -76,6 +73,6 @@ public class Deck : MonoBehaviour
         ShuffleDeck();
         
         // ensures the deck is fully initialised
-        finished = true;
+        isDeckLoaded = true;
     }
 }

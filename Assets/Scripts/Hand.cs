@@ -3,31 +3,19 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
 
+
+//class for drawing cards, selecting cards,
+//and the check if the card is playable
 public class Hand : MonoBehaviour
-{
-    //class for everything involving the hand
-    //used for drawing cards at the start of the game, placing cards. 
-    public List<Card> hand_cards;
-
-    public int starting_size = 5;
+{    
+    public List<Card> heldCards;
     public Deck deck;
-    public Card selected_card;
-    public Transform cardLayout; 
-
+    public Card selectedCard;
+    public Transform cardLayout;
 
     public void SetupHand()
     {
-        hand_cards = new List<Card>();
-    }
-
-    //gets the starting hand for the player
-
-    public void GetStartingHand()
-    {
-        for (int i = 0; i < starting_size; i++)
-        {
-            DrawCard();
-        }
+        heldCards = new List<Card>();
     }
 
     //draws a card from the deck
@@ -38,17 +26,17 @@ public class Hand : MonoBehaviour
         drawnCard.gameObject.SetActive(true);
         drawnCard.transform.SetParent(cardLayout, false);
         drawnCard.transform.localScale = Vector3.one;
-        hand_cards.Add(drawnCard);
+        heldCards.Add(drawnCard);
     }
 
     public void SelectCard(Card card)
     {
 
         // Deselect the previous card if there was one
-        if (selected_card != null)
+        if (selectedCard != null)
             DeselectCard();
 
-        selected_card = card;
+        selectedCard = card;
         card.selected = true;
         // Nudge the card upward visually to show it is selected
         card.transform.localPosition = new Vector3(
@@ -61,20 +49,20 @@ public class Hand : MonoBehaviour
 
     public void DeselectCard()
     {
-        if (selected_card == null) return;
-        selected_card.selected = false;
-        selected_card.transform.localPosition = new Vector3(
-            selected_card.transform.localPosition.x,
-            selected_card.transform.localPosition.y - 20f,
-            selected_card.transform.localPosition.z
+        if (selectedCard == null) return;
+        selectedCard.selected = false;
+        selectedCard.transform.localPosition = new Vector3(
+            selectedCard.transform.localPosition.x,
+            selectedCard.transform.localPosition.y - 20f,
+            selectedCard.transform.localPosition.z
         );
 
-        selected_card = null;
+        selectedCard = null;
     }
 
     public bool HasPlayableCard(Card_SO topCard)
     {
-        foreach (Card card in hand_cards)
+        foreach (Card card in heldCards)
         {
             if (card.card_SO.suit == topCard.suit || card.card_SO.rank == topCard.rank)
                 return true;

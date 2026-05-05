@@ -63,7 +63,7 @@ public class Card : MonoBehaviour
 
         foreach (Hand hand in gm.playerHands)
         {
-            if (hand.hand_cards.Contains(this))
+            if (hand.heldCards.Contains(this))
             {
 
                 if(selected == true)
