@@ -54,10 +54,23 @@ public class Deck : MonoBehaviour
         //    cards.Add(Instantiate(wildCard));
     }
 
-    public void InitialiseDeck()
+    public void InitialiseDeck(List<Card> excludedCards = null)
     {
         cards = new List<Card>();
         LoadAllCards();
+
+        if (excludedCards != null)
+        {
+            List<Card> heldCards = new List<Card>();
+
+            if (excludedCards != null && excludedCards.Count > 0)
+            {
+                // Compare and remove those in game from new deck
+                cards = cards.Except(excludedCards).ToList();
+            }
+            // Remove the held cards from the main deck
+            cards = cards.Except(heldCards).ToList();
+        }
 
         // shuffles Fisher-Yates style 
         ShuffleDeck();

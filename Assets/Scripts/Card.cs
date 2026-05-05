@@ -9,16 +9,15 @@ public enum Suit { Clubs, Hearts, Spades, Diamonds };
 public class Card : MonoBehaviour
 {
     public Card_SO card_SO; // Empty in inspector, code grabs the respective SO object
-    public Image suitImage; // Final location of Sprite on card
+    public Image suitImageLEFT, suitImageRIGHT; // Final location of Sprite on card
     public Sprite clubsSPR, heartsSPR, spadesSPR, diamondsSPR; // Potential sprites
-    public TextMeshProUGUI cardRankText, cardScoreText; // Text locations
+    public TextMeshProUGUI cardRankText; // Text locations
     public bool selected = false;
 
     public void DisplayCard(Card_SO card_SOToDisplay)
     {
         card_SO = card_SOToDisplay; // card_SO has the data within the scriptable object of each card
         cardRankText.text = RankToString(card_SO.rank);
-        cardScoreText.text = card_SO.score.ToString();
         SuitDisplay(card_SO.suit);
     }
 
@@ -46,7 +45,7 @@ public class Card : MonoBehaviour
 
     public void SuitDisplay(Suit suit)
     {
-        suitImage.sprite = suit switch
+        suitImageLEFT.sprite = suit switch
         {
             Suit.Clubs => clubsSPR,
             Suit.Hearts => heartsSPR,
@@ -54,6 +53,7 @@ public class Card : MonoBehaviour
             Suit.Diamonds => diamondsSPR,
             _ => throw new System.ArgumentOutOfRangeException(nameof(suit), suit, null)
         };
+        suitImageRIGHT.sprite = suitImageLEFT.sprite; // Both sides of the card show the same suit
     }
 
     public void OnCardClicked()

@@ -8,7 +8,7 @@ public class howtoplaypanel : MonoBehaviour
 
     void Start()
     {
-        panel.SetActive(false);
+        //panel.SetActive(false);
     }
 
     public void exit()

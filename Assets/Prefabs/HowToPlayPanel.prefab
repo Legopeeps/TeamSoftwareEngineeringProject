@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5557897053416167251}
   - component: {fileID: 8205661501628559824}
   m_Layer: 5
-  m_Name: how to play panel
+  m_Name: HowToPlayPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 4308453891619865182}
   - component: {fileID: 1475819980226442494}
   m_Layer: 5
-  m_Name: exit_panel
+  m_Name: ExitHelpButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,8 +113,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 479, y: 444}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 458.46228, y: 456.39526}
+  m_SizeDelta: {x: 66.1577, y: 75.2094}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4691056426496538129
 CanvasRenderer:
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1922979618149193216, guid: 6206529055f2fb24294cdb023debd9f1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6206529055f2fb24294cdb023debd9f1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
