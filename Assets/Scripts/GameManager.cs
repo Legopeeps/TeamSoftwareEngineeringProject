@@ -4,20 +4,26 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using System.Linq;
 
 public enum GameState { StartGame, BeginPlayerTurn, EndPlayerTurn, EndGame }
 
 public class GameManager : MonoBehaviour
 {
     private GameState currentState;
+    private bool canDraw = true; 
+
     public Deck deck;
     public List<Hand> playerHands;
     public int initialHandSize = 1;
     public int currentPlayerIndex = 0;
     public Card_SO topCard;
     public Transform playPilePosition;
+    public TMP_Text invalidMoveText;
     public GameObject playerSwitchPanel, gameOverPanel;
     public TMP_Text playerSwitchText, gameOverText;
+    public GameObject scrollView;
 
 
     void Start()
@@ -25,7 +31,6 @@ public class GameManager : MonoBehaviour
         currentState = GameState.StartGame;
         SetupGame();
     }
-
 
     void FlipStartingCard()
     {
@@ -35,7 +40,7 @@ public class GameManager : MonoBehaviour
         deck.cards.RemoveAt(0);
         PlaceOnPile(firstCard);  //places it on the pile
     }
-
+    
     void PlaceOnPile(Card card)
     {
         topCard = card.card_SO;
@@ -66,11 +71,15 @@ public class GameManager : MonoBehaviour
     }
 
     IEnumerator PlayerTurn(Hand hand)
-    {
-        currentState = GameState.BeginPlayerTurn;
-        //make it known that it's "this" players turn
-        yield return new WaitForSeconds(2f);
+    { 
+        currentState = GameState.BeginPlayerTurn; //make it known that it's "this" players turn
+        //scrollview x position is set to 0 at the start of the turn
+        scrollView.transform.localPosition = new Vector3(0, scrollView.transform.localPosition.y, scrollView.transform.localPosition.z);
+        canDraw = true; //allows the player to draw a card at the start of their turn, but not after they have drawn
+       
+
         yield return new WaitUntil(() => currentState == GameState.EndPlayerTurn); //waits until the player has ended their turn
+        
         WinCheck(hand);
         if (currentState == GameState.EndGame)
         {
@@ -78,7 +87,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            DisableHand(hand);
+            //DisableHand(hand);
             StartCoroutine(NextTurn());
         }
     }
@@ -99,9 +108,32 @@ public class GameManager : MonoBehaviour
 
     public void DrawCard()
     {
-        playerHands[currentPlayerIndex].DrawCard();
+        if (canDraw)
+        {
+            if (deck.cards.Count > 0)
+            {
+                playerHands[currentPlayerIndex].DrawCard();
+                canDraw = false;
+                currentState = GameState.EndPlayerTurn;
+            }
+            else
+            {
+                //collects data of all the cards currently held by players to reshuffle into the deck
+                List<Card> allHeldCards = playerHands.SelectMany(h => h.hand_cards).ToList();
 
-        currentState = GameState.EndPlayerTurn;
+                Card currentTopCard = playPilePosition.GetComponentInChildren<Card>();
+                if (currentTopCard != null)
+                {
+                    allHeldCards.Add(currentTopCard);
+                }
+
+                //reloads all the cards into the deck and reshuffles
+                deck.InitialiseDeck(allHeldCards);
+
+                //player draws a card after reshuffling
+                DrawCard();
+            }
+        }
     }
 
 
@@ -110,7 +142,7 @@ public class GameManager : MonoBehaviour
         return card.card_SO.suit == topCard.suit || card.card_SO.rank == topCard.rank || card.card_SO.isWildCard;  //returns true if the card is playable
     }
 
-    public void TryPlayCard(Card card, Hand hand)
+    public async Task TryPlayCard(Card card, Hand hand)
     {
         Debug.Log("TryPlayCard CHECK");
         if (IsPlayable(card))
@@ -122,7 +154,11 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} � must match rank or suit.");
+            DisableHand(playerHands[currentPlayerIndex]);
+            invalidMoveText.gameObject.SetActive(true);
+            await Task.Delay(2000); //waits for 2 seconds to show the invalid move text
+            invalidMoveText.gameObject.SetActive(false);
+            EnableHand(playerHands[currentPlayerIndex]);
         }
     }
 
@@ -143,6 +179,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    #region Hand Enabling and Disabling
     /*
      * Hand Enabling and Disabling
      */
@@ -155,8 +192,9 @@ public class GameManager : MonoBehaviour
     {
         hand.gameObject.SetActive(false);
     }
+    #endregion
 
-
+    #region Coroutine Management
     /*
      * Coroutine management
      */
@@ -172,112 +210,6 @@ public class GameManager : MonoBehaviour
     {
         StopAllCoroutines();
     }
-
+    #endregion
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//public Deck deck;
-//public List<Hand> players;   //list for the hand objects
-//  
-
-//public Button drawPileButton;
-//private int currentPlayerIndex = 0; //player turn
-//private Card_SO topCard; //stores the data of the last card played
-//private readonly string[] playerNames = { "Player 1", "Player 2", "Player 3", "Player 4" }; //player names
-
-
-//void Start()
-//{
-//    foreach (Hand hand in players) //draws the starting hand for each player
-//        hand.GetStartingHand();
-//
-//    FlipStartingCard();  //places the first card on the pile
-//    StartTurn(0);  //starts the game with player 1 
-//}
-//
-//
-
-
-
-
-
-//void StartTurn(int playerIndex)
-//{
-//    currentPlayerIndex = playerIndex;
-//
-//    for (int i = 0; i < players.Count; i++)   //makes it so the current playres turn is true but false for all others
-//        players[i].turn = (i == currentPlayerIndex);
-//
-//    if (turnAnnouncerText != null)  //changes ui to show the current turn
-//        turnAnnouncerText.text = $"{playerNames[currentPlayerIndex]}'s Turn";
-//
-//    Debug.Log($"--- {playerNames[currentPlayerIndex]}'s Turn ---");
-//}
-
-
-//public void TryPlayCard(Card card, Hand hand)
-//{
-//    if (!hand.turn) return;    //ignores the other players
-//
-//    if (IsPlayable(card.card_SO))
-//    {
-//        hand.hand_cards.Remove(card);   //removes a card from the hand and places it on the pile
-//        PlaceOnPile(card);
-//        hand.WinCheck();  //trys wincheck
-//        EndTurn();
-//    }
-//    else
-//    {
-//        Debug.Log($"Can't play {card.card_SO.rank} of {card.card_SO.suit} � must match rank or suit.");
-//    }
-//}
-
-//public void DrawAndPass()
-//{
-//    Hand current = players[currentPlayerIndex];  
-//    if (!current.turn) return;
-//
-//    if (deck.cards.Count > 0) //draws the top card into the players hand
-//    {
-//        current.DrawCard();
-//        Debug.Log($"{playerNames[currentPlayerIndex]} drew a card.");
-//    }
-//    else
-//    {
-//        Debug.LogWarning("Deck is empty � no card to draw.");
-//    }
-//
-//    EndTurn();
-//}
-//
-//bool IsPlayable(Card_SO card)
-//{
-//    return card.suit == topCard.suit || card.rank == topCard.rank;  //returns true if the card is playable
-//}
-//
-//void EndTurn()
-//{
-//    StartTurn(  //goes to the next player
-//}
