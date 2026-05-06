@@ -6,19 +6,17 @@ using System.Linq;
 // including shuffling, drawing, and (POSSIBLY) discarding cards.
 public class Deck : MonoBehaviour
 {
-    //public List<Card> cards;
-    //public List<Card_SO> cardsSO;
-    public bool finished = false;
+    #region Variables
+    public bool isDeckLoaded = false;
     public GameObject cardPrefab;
-    
     public Transform deckHolderTransform;
     public List<Card> cards;
+    #endregion
 
     private void ShuffleDeck()
     {
         // this method will be responsible for shuffling the deck of cards,
-        // want to use fisher-yates shuffle algorithm to ensure a good shuffle,
-        // it's a cool one i found on stack overflow
+        // want to use fisher-yates shuffle algorithm to ensure a good shuffle
         if (cards.Count == 0)
         {
             Debug.LogWarning("Deck is empty, cannot shuffle.");
@@ -74,8 +72,8 @@ public class Deck : MonoBehaviour
 
         // shuffles Fisher-Yates style 
         ShuffleDeck();
-        
+
         // ensures the deck is fully initialised
-        finished = true;
+        isDeckLoaded = true;
     }
 }

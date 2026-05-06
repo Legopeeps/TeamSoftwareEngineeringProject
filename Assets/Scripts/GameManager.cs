@@ -11,8 +11,9 @@ public enum GameState { StartGame, BeginPlayerTurn, EndPlayerTurn, EndGame }
 
 public class GameManager : MonoBehaviour
 {
+    #region Variables
     private GameState currentState;
-    private bool canDraw = true; 
+    private bool canDraw = true;
 
     public Deck deck;
     public List<Hand> playerHands;
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text playerSwitchText, gameOverText;
     public GameObject scrollView;
 
-
+    #endregion
     void Start()
     {
         currentState = GameState.StartGame;
@@ -40,7 +41,7 @@ public class GameManager : MonoBehaviour
         deck.cards.RemoveAt(0);
         PlaceOnPile(firstCard);  //places it on the pile
     }
-    
+
     void PlaceOnPile(Card card)
     {
         topCard = card.card_SO;
@@ -52,7 +53,6 @@ public class GameManager : MonoBehaviour
 
     void SetupGame()
     {
-        Debug.Log("Setting up the game...");
         deck.InitialiseDeck();
         foreach (Hand hand in playerHands)
         {
@@ -71,15 +71,15 @@ public class GameManager : MonoBehaviour
     }
 
     IEnumerator PlayerTurn(Hand hand)
-    { 
+    {
         currentState = GameState.BeginPlayerTurn; //make it known that it's "this" players turn
         //scrollview x position is set to 0 at the start of the turn
         scrollView.transform.localPosition = new Vector3(0, scrollView.transform.localPosition.y, scrollView.transform.localPosition.z);
         canDraw = true; //allows the player to draw a card at the start of their turn, but not after they have drawn
-       
+
 
         yield return new WaitUntil(() => currentState == GameState.EndPlayerTurn); //waits until the player has ended their turn
-        
+
         WinCheck(hand);
         if (currentState == GameState.EndGame)
         {
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 //collects data of all the cards currently held by players to reshuffle into the deck
-                List<Card> allHeldCards = playerHands.SelectMany(h => h.hand_cards).ToList();
+                List<Card> allHeldCards = playerHands.SelectMany(h => h.heldCards).ToList();
 
                 Card currentTopCard = playPilePosition.GetComponentInChildren<Card>();
                 if (currentTopCard != null)
@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
         if (IsPlayable(card))
         {
             Debug.Log($"Played {card.card_SO.rank} of {card.card_SO.suit}.");
-            hand.hand_cards.Remove(card);   //removes a card from the hand and places it on the pile
+            hand.heldCards.Remove(card);   //removes a card from the hand and places it on the pile
             PlaceOnPile(card);
             currentState = GameState.EndPlayerTurn;
         }
@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
     IEnumerator EndGame(Hand hand)
     {
         gameOverPanel.SetActive(true);
-        
+
         gameOverText.text = "Player " + hand.gameObject.name + " has Won!";
 
         yield return null;
@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour
 
     public void WinCheck(Hand hand)
     {
-        if (hand.hand_cards.Count == 0)
+        if (hand.heldCards.Count == 0)
         {
             currentState = GameState.EndGame;
         }
